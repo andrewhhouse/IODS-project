@@ -1,6 +1,6 @@
 ---
 title: "IODS course project"
-author: 'Andrew House'
+author: 'Andrew H House'
 output:
     html_document:
     theme: cosmo
@@ -27,5 +27,5 @@ output:
 
 ***
 
-(more chapters to be added similarly as we proceed with the course!)
+(more chapters to be added similarly as we proceed with the course!) Chapter 3 coming soon 
 
