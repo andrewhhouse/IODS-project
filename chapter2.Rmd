@@ -52,6 +52,7 @@ p
 
 ```{r}
 data()
+###analyze with regression 
 ```
 
 Here we go again...
