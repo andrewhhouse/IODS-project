@@ -7,6 +7,8 @@ author: "Andrew House"
 - Assume the reader has an introductory course level understanding of writing and reading R code as well as statistical methods.
 - Assume the reader has no previous knowledge of your data or the more advanced methods you are using.
 
+First we read in the data and check it's structure and dimension. 
+
 ```{r}
 learning2014 <- read.table('http://s3.amazonaws.com/assets.datacamp.com/production/course_2218/datasets/learning2014.txt', sep= ",", head =T )
 
