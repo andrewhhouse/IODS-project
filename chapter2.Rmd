@@ -1,5 +1,6 @@
 # Insert chapter 2 title here
-
+title: 'Chapter 2: Regression and Model Validation'
+author: "Andrew House"
 *Describe the work you have done this week and summarize your learning.*
 
 - Describe your work and results clearly. 
@@ -7,7 +8,45 @@
 - Assume the reader has no previous knowledge of your data or the more advanced methods you are using.
 
 ```{r}
+learning2014 <- read.table('http://s3.amazonaws.com/assets.datacamp.com/production/course_2218/datasets/learning2014.txt', sep= ",", head =T )
+
+dim(learning2014)
+#166  7
+str(learning2014)
+### Data has 166 entires with 7 different variables. Data was collected in 2014-2015. 
 date()
 ```
+
+
+```{r}
+library(ggplot2)
+
+# initialize plot with data and aesthetic mapping
+p1 <- ggplot(learning2014, aes(x = attitude, y = points, col = gender))
+
+# define the visualization type (points)
+p2 <- p1 + geom_point()
+
+# draw the plot
+
+
+# add a regression line
+p3 <- p2 + geom_smooth(method = "lm")
+
+# add a main title and draw the plot
+p4 <- p3 + ggtitle("Student's attitude versus exam points")
+p4
+```
+```{r}
+### plot the variable and look for correlation between the variable
+library(GGally)
+library(ggplot2)
+
+# create a more advanced plot matrix with ggpairs()
+p <- ggpairs(learning2014, mapping = aes(col = gender), lower = list(combo = wrap("facethist", bins = 20)))
+p
+```
+
+
 
 Here we go again...
