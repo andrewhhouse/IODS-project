@@ -52,7 +52,7 @@ p
 
 ```{r}
 data()
-###analyze with regression 
+###analyze with regression sometime
 ```
 
 Here we go again...
