@@ -3,7 +3,7 @@
 
 *Write a short description about the course and add a link to your GitHub repository here. This is an R Markdown (.Rmd) file so you should use R Markdown syntax.*
 
-Hello. I am PhD student in wildlife biology. I am hoping to get a nice backgroud with managing data science. I am in my final year so this course will act as refresher and help me to finish. The link to my repository is here: https://andrewhhouse.github.io/IODS-project/
+Hello. I am PhD student in wildlife biology. I am hoping to get a nice backgroud with managing data science. I am in my final year so this course will act as refresher and help me to finish. The link to my course diary is here: https://andrewhhouse.github.io/IODS-project/
 
 ```{r}
 # This is a so-called "R chunk" where you can write R code.
