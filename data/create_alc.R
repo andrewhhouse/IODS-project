@@ -23,6 +23,8 @@ por <- read.table(url_por, sep = ";", header = TRUE)
 # look at the column names of both data
 colnames(por)
 colnames(math)
+## 
+
 
 ##get packages
 library(dplyr)
