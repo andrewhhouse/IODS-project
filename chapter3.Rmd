@@ -26,19 +26,19 @@ str(pormath)
 library(tidyr); library(dplyr); library(ggplot2)
 
 # glimpse at the alc data
-glimpse(alc) 
+#glimpse(alc) 
 
 # use gather() to gather columns into key-value pairs and then glimpse() at the resulting data
-gather(alc) %>% glimpse
+#gather(alc) %>% glimpse
 
 # draw a bar plot of each variable
-gather(alc) %>% ggplot(aes(value)) + facet_wrap("key", scales = "free") + geom_bar()
+#gather(alc) %>% ggplot(aes(value)) + facet_wrap("key", scales = "free") + geom_bar()
 
 ```
 
 
 ```{r}
-alc %>% group_by(sex, high_use) %>% summarise(count = n(), mean_grade = mean(G3))
+#alc %>% group_by(sex, high_use) %>% summarise(count = n(), mean_grade = mean(G3))
 
 ```
 
