@@ -1,4 +1,13 @@
 
+title: 'Chapter 3: Logistic Regression'
+author: "Andrew House"
+date: "11/21/2021"
+output: html_document
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+
 ### Reading the data
 url <- "http://s3.amazonaws.com/assets.datacamp.com/production/course_2218/datasets"
 
