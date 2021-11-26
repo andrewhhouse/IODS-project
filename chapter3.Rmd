@@ -19,8 +19,9 @@ str(pormath)
 ```
 
 
-
-
+Variables not used for joining the two data have been combined by averaging (including the grade variables)
+'alc_use' is the average of 'Dalc' and 'Walc'
+'high_use' is TRUE if 'alc_use' is higher than 2 and FALSE otherwise
 
 ```{r}
 library(tidyr); library(dplyr); library(ggplot2)
@@ -35,10 +36,56 @@ library(tidyr); library(dplyr); library(ggplot2)
 #gather(alc) %>% ggplot(aes(value)) + facet_wrap("key", scales = "free") + geom_bar()
 
 ```
+My personal hypotheses
 
+Guardian
+freetime 
+go out
+internet 
 
 ```{r}
 #alc %>% group_by(sex, high_use) %>% summarise(count = n(), mean_grade = mean(G3))
+pormath %>% group_by(sex, high_use) %>% summarise(count = n(), mean_studytime = mean(studytime))
+```
 
+
+```{r}
+pormath %>% group_by(sex, high_use) %>% summarise(count = n(), mean_absences = mean(absences))
+```
+
+
+```{r}
+pormath %>% group_by(sex, high_use) %>% summarise(count = n(), mean_freetime = mean(freetime))
+```
+
+
+```{r}
+pormath %>% group_by(sex, high_use) %>% summarise(count = n(), mean_goout = mean(goout))
+```
+
+
+```{r}
+library(cowplot)
+#Initializing a barplot of age
+g1 <- ggplot(pormath, aes(x = absences, fill = sex)) + geom_bar() #+ ylab("age")
+
+#... of going out with friends (goout)
+g2 <- ggplot(pormath, aes(x = goout, fill = sex)) + geom_bar()
+
+#... of absences
+g3 <- ggplot(pormath, aes(x = studytime, fill = sex)) + geom_bar()
+
+#... of final grade (G3)
+g4 <- ggplot(pormath, aes(x = freetime, fill = sex)) + geom_bar()
+
+#... of alcohol consumption (alc_use)
+g5 <- ggplot(pormath, aes(x = alc_use, fill = sex)) + geom_bar()
+
+#... of whether the consumption is high/low (high_use)
+g6 <- ggplot(pormath, aes(x = high_use, fill = sex)) + geom_bar()
+
+
+#Plotting all 4 barplots
+plot_grid(g1, g2, g3, g4, g5, g6, labels="AUTO")
 ```
 

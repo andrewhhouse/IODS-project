@@ -1,11 +1,4 @@
----
-title: "chapter4"
-author: "Andrew House"
-date: "11/23/2021"
-output: html_document
----
-
-## R Markdown
+## Chapter 4
 
 This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
 
