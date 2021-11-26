@@ -1,4 +1,4 @@
-# Insert chapter 2 title here
+# Chapter 2
 title: 'Chapter 2: Regression and Model Validation'
 author: "Andrew House"
 *Describe the work you have done this week and summarize your learning.*
