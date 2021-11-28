@@ -12,4 +12,3 @@ Hello. I am PhD student in wildlife biology. I am hoping to get a nice backgroud
 date()
 
 ```
-The text continues here.

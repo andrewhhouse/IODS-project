@@ -1,19 +1,190 @@
-## Chapter 4
+# Chapter 4
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+```{r}
+library(MASS)
 
-```{r cars}
-summary(cars)
+data(Boston)
+
+str(Boston)
 ```
 
 ## Including Plots
 
 You can also embed plots, for example:
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+```{r}
+
+summary(Boston)
+```
+```{r}
+pairs(Boston)
+```
+```{r}
+
+library(tidyr)
+library(corrplot)
+
+
+```
+```{r}
+cor_matrix<-cor(Boston) %>% round(digits = 2)
+
+#Priunting the correlation matrix
+cor_matrix
+#Visualizing the correlation matrix
+corrplot(cor_matrix, method="circle", type="upper", cl.pos="b", tl.pos="d", tl.cex = 0.6)
+
+```
+```{r}
+#Let us center and standardize variables 
+
+boston_scaled <- scale(Boston) #Summaries of the scaled variables 
+summary(boston_scaled) #The class of the boston_scaled object
+class(boston_scaled)
+
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+```{r}
+#Changing the object to data frame
+boston_scaled <- as.data.frame(boston_scaled)
+
+```
+
+```{r}
+bins <- quantile(boston_scaled$crim)
+bins
+crime <- cut(boston_scaled$crim, breaks = bins, include.lowest = TRUE, labels = c("low","med_low","med_high","high"))
+table(crime)
+```
+
+```{r}
+boston_scaled <- dplyr::select(boston_scaled, -crim)
+
+
+boston_scaled <- data.frame(boston_scaled, crime)
+```
+
+```{r}
+#The number of rows in the Boston data set 
+n <- nrow(boston_scaled)
+
+#Choosing randomly 80% of the rows
+ind <- sample(n,  size = n * 0.8)
+
+#Creating 'train' set (80% of the rows)
+train <- boston_scaled[ind,]
+
+#Creating 'test' set (20% of the rows)
+test <- boston_scaled[-ind,]
+
+#Let us save the correct classes from 'test' data
+correct_classes <- test$crime
+
+#And remove the crime variable from 'test' data
+test <- dplyr::select(test, -crime)
+
+```
+
+
+```{r}
+#A linear discriminant analysis (LDA)
+#Crime rate as target variable, all the others (.) as predictor variables
+lda.fit <- lda(crime ~ ., data = train)
+
+#Printing the lda.fit object
+lda.fit
+#The function for lda biplot arrows
+lda.arrows <- function(x, myscale = 1, arrow_heads = 0.1, color = "red", tex = 0.75, choices = c(1,2)){
+  heads <- coef(x)
+  arrows(x0 = 0, y0 = 0, 
+         x1 = myscale * heads[,choices[1]], 
+         y1 = myscale * heads[,choices[2]], col=color, length = arrow_heads)
+  text(myscale * heads[,choices], labels = row.names(heads), 
+       cex = tex, col=color, pos=3)
+}
+
+#Target classes as numeric
+classes <- as.numeric(train$crime)
+
+#Plotting the results of lda
+plot(lda.fit, dimen = 2, col = classes, pch = classes)
+lda.arrows(lda.fit, myscale = 2)
+
+```
+
+
+```{r}
+lda.pred <- predict(lda.fit, newdata = test)
+
+#Cross tabulation of the results
+table(correct = correct_classes, predicted = lda.pred$class)
+
+```
+
+
+```{r}
+#Scaling and standardizing the data set 'Boston'
+boston_scaled1 <- scale(Boston)
+
+#Changing the object to data frame
+boston_scaled2 <- as.data.frame(boston_scaled1)
+
+
+#Euclidean distance matrix
+dist_eu <- dist(boston_scaled2)
+
+#Let us see the summary of the distances
+summary(dist_eu)
+
+```
+
+```{r}
+#Manhattan distance matrix
+dist_man <- dist(boston_scaled2, method = "manhattan")
+
+#Let us now see the summary of the distances again
+summary(dist_man)
+
+```
+
+
+```{r}
+km <-kmeans(boston_scaled2, centers = 3)
+
+#Plotting the Boston dataset with clusters
+#5 columns (columns 6 to 10) have been paired up to make examination more clear
+pairs(boston_scaled2[6:10], col = km$cluster)
+
+```
+
+
+```{r}
+library(ggplot2)
+
+#To ensure that the result does not vary every time
+set.seed(123)
+
+#Determining the number of clusters
+k_max <- 10
+
+#Calculating the total within sum of squares (twcss)
+twcss <- sapply(1:k_max, function(k){kmeans(boston_scaled2, k)$tot.withinss})
+
+#Visualizing the results
+qplot(x = 1:k_max, y = twcss, geom = 'line')
+
+```
+
+
+
+```{r}
+km <-kmeans(boston_scaled2, centers = 2)
+
+#Plotting the Boston dataset with clusters
+pairs(boston_scaled2[6:10], col = km$cluster)
+
+```
+
+
+
