@@ -11,20 +11,20 @@ data(Boston)
 str(Boston)
 ```
 The data set includes housing values in Boston with 14 columns. These include the following: 
-crime per capita (crim)
-proportion of residential land zoned for lots(zn)
-proportion of non-retail business acres (indus)
-Charles River dummy variable (chas)
-nitrogen oxides concentration (nox)
-average number of rooms (rm)
-proportion of owner-occupied units prior to 1940 (age)
-weight mean of distances to 5 employment centers (dis)
-index of accessibility to radial highways (rad)
-full-value property tax rate (tax)
-pupil-teacher ratio (ptratio)
-proportion of blacks by town (black)
-lower status of population (lstat)
-median value of owner-occupied homes (medv)
+crime per capita (crim),
+proportion of residential land zoned for lots(zn),
+proportion of non-retail business acres (indus),
+Charles River dummy variable (chas),
+nitrogen oxides concentration (nox),
+average number of rooms (rm),
+proportion of owner-occupied units prior to 1940 (age),
+weight mean of distances to 5 employment centers (dis),
+index of accessibility to radial highways (rad),
+full-value property tax rate (tax),
+pupil-teacher ratio (ptratio),
+proportion of blacks by town (black),
+lower status of population (lstat),
+median value of owner-occupied homes (medv),
 
 
 
