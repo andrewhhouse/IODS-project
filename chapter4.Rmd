@@ -1,6 +1,8 @@
 # Chapter 4
 
 
+## Dataset and Exploration
+Let' start with loading the Mass package and exploring the data. 
 ```{r}
 library(MASS)
 
@@ -8,18 +10,41 @@ data(Boston)
 
 str(Boston)
 ```
+The data set includes housing values in Boston with 14 columns. These include the following: 
+crime per capita (crim)
+proportion of residential land zoned for lots(zn)
+proportion of non-retail business acres (indus)
+Charles River dummy variable (chas)
+nitrogen oxides concentration (nox)
+average number of rooms (rm)
+proportion of owner-occupied units prior to 1940 (age)
+weight mean of distances to 5 employment centers (dis)
+index of accessibility to radial highways (rad)
+full-value property tax rate (tax)
+pupil-teacher ratio (ptratio)
+proportion of blacks by town (black)
+lower status of population (lstat)
+median value of owner-occupied homes (medv)
 
-## Including Plots
 
-You can also embed plots, for example:
+
+Now to check the summary of th data set
 
 ```{r}
 
 summary(Boston)
 ```
+
+
+
+
 ```{r}
 pairs(Boston)
 ```
+
+##Correlation Plot
+
+Now to load the packages for the correlation plot. 
 ```{r}
 
 library(tidyr)
@@ -27,6 +52,10 @@ library(corrplot)
 
 
 ```
+
+
+
+
 ```{r}
 cor_matrix<-cor(Boston) %>% round(digits = 2)
 
@@ -36,11 +65,22 @@ cor_matrix
 corrplot(cor_matrix, method="circle", type="upper", cl.pos="b", tl.pos="d", tl.cex = 0.6)
 
 ```
+
+
+
+Looking at the table, many variables were correlated with each other being above 0.6. The highest was between tax-rad with a value of 0.91. This is index of accessibility to radial highways and full-value property tax rate.
+
+
+Now we need to standardize and scale out data.the column means will be subtracted from the corresponding columns. Then the difference will be divided by standard deviation. We use the scale function. 
+
+
 ```{r}
 #Let us center and standardize variables 
 
-boston_scaled <- scale(Boston) #Summaries of the scaled variables 
-summary(boston_scaled) #The class of the boston_scaled object
+boston_scaled <- scale(Boston) 
+#Summaries of the scaled variables 
+summary(boston_scaled) 
+#class of the boston_scaled object
 class(boston_scaled)
 
 ```
@@ -51,19 +91,27 @@ boston_scaled <- as.data.frame(boston_scaled)
 
 ```
 
+##Creating a factor variable 
+
+We now look at crime (rate per capita by town) and make categorical variables (high, med_high, med_low, and low)
+
 ```{r}
 bins <- quantile(boston_scaled$crim)
 bins
 crime <- cut(boston_scaled$crim, breaks = bins, include.lowest = TRUE, labels = c("low","med_low","med_high","high"))
 table(crime)
 ```
-
+The above summary shows the distribution of the data in the created categories. 
 ```{r}
 boston_scaled <- dplyr::select(boston_scaled, -crim)
 
 
 boston_scaled <- data.frame(boston_scaled, crime)
 ```
+ 
+## Divide and Conquer
+
+We now need to divide the dataset so that 80% belongs to the train set. We will then test predictions on the data and test how well the model works. 
 
 ```{r}
 #The number of rows in the Boston data set 
@@ -87,6 +135,11 @@ test <- dplyr::select(test, -crime)
 ```
 
 
+##LDA analysis
+
+
+We now run a LDA and create a biplot with the data to see how the grouping works with our data. 
+
 ```{r}
 #A linear discriminant analysis (LDA)
 #Crime rate as target variable, all the others (.) as predictor variables
@@ -109,10 +162,10 @@ classes <- as.numeric(train$crime)
 
 #Plotting the results of lda
 plot(lda.fit, dimen = 2, col = classes, pch = classes)
-lda.arrows(lda.fit, myscale = 2)
+lda.arrows(lda.fit, myscale = 1)
 
 ```
-
+From the plot above, we see that rad has a lot of influence over the separation of the data. 
 
 ```{r}
 lda.pred <- predict(lda.fit, newdata = test)
@@ -121,7 +174,11 @@ lda.pred <- predict(lda.fit, newdata = test)
 table(correct = correct_classes, predicted = lda.pred$class)
 
 ```
+We can see that under med_low, there is the highest mistakes in the prediction. 
 
+## Clustering
+
+We now standardize the dataset and calculate distances. 
 
 ```{r}
 #Scaling and standardizing the data set 'Boston'
@@ -149,15 +206,23 @@ summary(dist_man)
 ```
 
 
+
+## K-means clustering
+
+K-means is highly used for clustering. We will cluster the data by distance. 
+
 ```{r}
 km <-kmeans(boston_scaled2, centers = 3)
 
 #Plotting the Boston dataset with clusters
 #5 columns (columns 6 to 10) have been paired up to make examination more clear
-pairs(boston_scaled2[6:10], col = km$cluster)
+pairs(boston_scaled2, col = km$cluster)
 
 ```
 
+
+
+We now want to look the optimal number of clusters for our dataset. We look at the cluster sum of squares (WCSS) to figure this out. We set the max to 10 and execute the code. The outpud will show us the optimum number we should use for the dataset. 
 
 ```{r}
 library(ggplot2)
@@ -176,15 +241,19 @@ qplot(x = 1:k_max, y = twcss, geom = 'line')
 
 ```
 
-
+We can see here that at 2 where the drop of the line ends so we will now use 2 clusters for our dataset. 
 
 ```{r}
 km <-kmeans(boston_scaled2, centers = 2)
 
 #Plotting the Boston dataset with clusters
-pairs(boston_scaled2[6:10], col = km$cluster)
+pairs(boston_scaled2, col = km$cluster)
 
 ```
 
+
+
+
+The above graph shows our all of our variables after using the K-means clustering and sum of squares of finding out that 2 clusters is the optimum for our data. We can observe the variables that are distinct from each other that show us there is correlation between them. This also allows us to see what variable are influencing each other.  
 
 
