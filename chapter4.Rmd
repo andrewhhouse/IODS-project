@@ -59,7 +59,7 @@ library(corrplot)
 ```{r}
 cor_matrix<-cor(Boston) %>% round(digits = 2)
 
-#Priunting the correlation matrix
+#Printing the correlation matrix
 cor_matrix
 #Visualizing the correlation matrix
 corrplot(cor_matrix, method="circle", type="upper", cl.pos="b", tl.pos="d", tl.cex = 0.6)
