@@ -1,12 +1,7 @@
----
-title: "Chapter 5"
-author: "Andrew House"
-date: "11/30/2021"
-output: html_document
----
+# Chapter 5
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+```{r}
+
 ```
 
 ## R Markdown
@@ -17,7 +12,9 @@ When you click the **Knit** button a document will be generated that includes bo
 
 ```{r cars}
 summary(cars)
+## na.omit()
 ```
+
 
 ## Including Plots
 

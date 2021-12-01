@@ -5,6 +5,7 @@ output:
     html_document:
       theme: cosmo
       toc: yes
+     # number_sections: true  ## if you want number sections at each table header
       toc_depth: 2
       fig_caption: true
       fig_width: 6
@@ -40,5 +41,8 @@ output:
 # This will include Chapter 4 (that is updated in its own file) in the document.Updated!!
 ```
 
+```{r child = "chapter5.Rmd"}
+
+```
 
 
