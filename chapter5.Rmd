@@ -62,27 +62,27 @@ The first shows maximum variance with each component having less and less varian
 pca_human <- prcomp(human)
 
 #Creating a summary of pca_human
-summary(pca_human)
-
+s <- summary(pca_human)
+s
 ```
 
 
 
 ```{r}
-#Rounded percetanges of variance captured by each PC
-pca_human <- round(100*s$importance[2, ], digits = 1)
+pca_pr <- round(100*s$importance[2, ], digits = 1)
 
 #The percentages of variance
-pca_human
+pca_pr
 ```
 
 
 
 
 ```{r}
+pc_lab <- paste0(names(pca_pr), " (", pca_pr, "%)")
 
 #Drawing a biplot
-biplot(pca_human, choices = 1:2, cex = c(0.8, 1), col = c("grey40", "deeppink2"))
+biplot(pca_human, cex = c(0.8, 1), col = c("grey40", "deeppink2"), xlab = pc_lab[1], ylab = pc_lab[2])
 ```
 Here we can the two main principial components. The PC1 axis is first principal direction which chose the largest variation in our dataset. The PC2 is the second. 
 We see here that these principal components show the majority of our variations but does not and represents the variation in our data well. We can see that GNI represented here interacting with the PC1. 
@@ -188,4 +188,6 @@ summary(mca)
 #Visualization of MCA
 plot(mca, invisible=c("ind"), habillage = "quali",graph.type = "classic")
 ```
-Here we can see that the answers to these categorical variable dont have much variation since they mostly fall centered around 0 between the dimension as shown on the plot. There are two (dinner and not.home) that seem to be pulled away showing that the answers to these were the majority of one answer. This is a nice way to analyze the data when wanted to compare multiple variables at once and check the interaction. Unlike the PCA, this allows you to look at many variable at once and see variation bewtween many at the same time. 
+
+
+Here we can see that the ouput of the MCA to the chosen 6 categorical variable. We can see that they don't have much variation since they mostly fall centered around 0 between the dimension as shown on the plot. There are two (dinner and not.home) that seem to be pulled away showing that the answers to these were the majority of one answer. This is a nice way to analyze the data when wanted to compare multiple variables at once and check the interaction. Unlike the PCA, this allows you to look at many variable at once and see variation bewtween many at the same time. 
