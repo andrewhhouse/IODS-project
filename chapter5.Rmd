@@ -1,27 +1,191 @@
 # Chapter 5
 
+Now we will read in the human dataset. We check the dimension and structure. 
+
+```{r}
+human = read.table("http://s3.amazonaws.com/assets.datacamp.com/production/course_2218/datasets/human2.txt", sep=",", header=TRUE)
+names(human)
+#Let us see the dimensions and structure of the data set
+dim(human)
+```
+
+
+```{r }
+str(human)
+```
+The above data has the 8 columns we want to keep and run a correlation, PCA and MCA plot.These include Edu2.FM,Labo.FM, Life.Exp, Edu.Exp, GNI, Mat.Mor, Ado.Birth, and Parli.F. The GNI variables are now numeric to be able to run the analysis
+
+
+
+## Correlation Plot
+
 ```{r}
 
+
+
+# Access GGally
+library(GGally)
+
+# visualize the 'human_' variables
+
+
+# compute the correlation matrix and visualize it with corrplot
+cor(human)
+
 ```
 
-## R Markdown
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+....
+,,,
+```{r}
+library(GGally)
+library(dplyr)
+library(corrplot)
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+#Visualizing the 'human' variables
+ggpairs(human)
+```
+We see here how are data interacts with each other. There are several high (positive and negative) correlation values including Life Exp, EDU, EDU.Exp  Mat.Mor, Labo.FM when they interact with each other.
+ 
+ 
+The highest positive is Life.Exp and Edu. Exp at 0.789 and the highest negative is Life.Exp and Mat.Mor at -0.857. 
 
-```{r cars}
-summary(cars)
-## na.omit()
+
+
+## PCA Analysis
+
+PCA allow us to summarive and visuale a data set and the information. We take each variable as a serparte dimension in the analysis. 
+
+The first shows maximum variance with each component having less and less variance in our dataset. 
+
+```{r}
+pca_human <- prcomp(human)
+
+#Creating a summary of pca_human
+summary(pca_human)
+
 ```
 
 
-## Including Plots
 
-You can also embed plots, for example:
+```{r}
+#Rounded percetanges of variance captured by each PC
+pca_human <- round(100*s$importance[2, ], digits = 1)
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+#The percentages of variance
+pca_human
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+
+
+```{r}
+
+#Drawing a biplot
+biplot(pca_human, choices = 1:2, cex = c(0.8, 1), col = c("grey40", "deeppink2"))
+```
+Here we can the two main principial components. The PC1 axis is first principal direction which chose the largest variation in our dataset. The PC2 is the second. 
+We see here that these principal components show the majority of our variations but does not and represents the variation in our data well. We can see that GNI represented here interacting with the PC1. 
+
+
+```{r}
+#Standardizing the variables
+human_s <- scale(human)
+
+#Performing PCA with the SVD method
+pca_human_s <- prcomp(human_s)
+
+#Creating a summary of pca_human
+s_s <- summary(pca_human_s)
+s
+```
+
+
+
+
+```{r}
+#Rounded percetanges of variance captured by each PC
+pca_pr_s <- round(100*s_s$importance[2, ], digits = 1)
+
+#The percentages of variance
+pca_pr_s
+```
+
+
+
+```{r}
+#Creating object pc_lab (by the first two principal components) to be used as axis labels
+pc_lab_s <- paste0(names(pca_pr_s), " (", pca_pr_s, "%)")
+
+#Drawing a biplot
+biplot(pca_human_s, cex = c(0.8, 1), col = c("grey40", "deeppink2"), xlab = pc_lab_s[1], ylab = pc_lab_s[2])
+```
+The second PCA analysis does whow a more even variation after standardization. The variance is more evenly captured now between our variables and not just in one principal component. We can see this in the summary above when looking at the variation captured in the component (PC1 = 53.6, PC2 = 16.2, etc). We can see here a natural type of interaction within our variables and how they control the variation within.  
+
+The biplot is able to show the interaction with PC1 and PC2 but with such a high number of variable it can be hard to fully intepret.The main outpurs are the Parli.FM and Labo.Fm showing lots of variation with PC2. 
+
+
+## MCA with Tea dataset
+
+MCA (multiple correspondence analysis) is an extensiong of summarizing and visualizing datasets with multiple categorical variables. We want to see if there are similarities to the observations from 6 different varibles below. 
+
+```{r}
+library(FactoMineR)
+
+
+library(ggplot2)
+library(tidyr)
+
+#Loading the data
+data("tea")
+
+#Exploring the data set
+str(tea) 
+
+dim(tea)
+```
+
+We can see here that there are 300 observations with 36 variables. 
+
+
+```{r}
+#36 variables is a lot, let us choose couple to examine closer 
+
+
+#Column names to keep in the data set
+keep_columns <- c("dinner", "home", "work", "friends", "breakfast", "lunch")
+
+#Selecting the 'keep_columns' to create a new data set
+tea_time <- dplyr::select(tea, one_of(keep_columns))
+
+#The summaries and structure of the data
+summary(tea_time)
+
+
+str(tea_time)
+
+
+#Visualization of the data set
+gather(tea_time) %>% ggplot(aes(value)) + facet_wrap("key", scales = "free") + geom_bar() + theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 8))
+
+
+#Multiple correspondence analysis
+mca <- MCA(tea_time, graph = FALSE)
+
+```
+Here I have only take 6 variables including breakfast, lunch, dinner, home, friends and work. We see people drink tea at breakfast and not breakfast. Also, we see that not drinking at dinner and lunch is most often. People like to drink tea at home and with friends. Most people dont drink tea at work. 
+
+
+```{r}
+
+#Summary of the model
+summary(mca)
+
+
+```
+```{r}
+
+#Visualization of MCA
+plot(mca, invisible=c("ind"), habillage = "quali",graph.type = "classic")
+```
+Here we can see that the answers to these categorical variable dont have much variation since they mostly fall centered around 0 between the dimension as shown on the plot. There are two (dinner and not.home) that seem to be pulled away showing that the answers to these were the majority of one answer. This is a nice way to analyze the data when wanted to compare multiple variables at once and check the interaction. Unlike the PCA, this allows you to look at many variable at once and see variation bewtween many at the same time. 
