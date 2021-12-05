@@ -99,6 +99,7 @@ human <- select(human, one_of(keep))
 # print out a completeness indicator of the 'human' data
 complete.cases(human)
 
+# updated on 5.12
 # print out the data along with a completeness indicator as the last column
 data.frame(human[-1], comp = complete.cases(human))
 
