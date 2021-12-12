@@ -1,0 +1,285 @@
+# Chapter 6 
+
+For this week we will load two datasets in wide format and convert them to long format. We will then perform analysis on the long formatted dataset. 
+
+
+##Analysis of RATS data
+
+We now will load the RATS data. 
+
+```{r}
+library(reshape2)
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+
+
+RATS <- read.table("https://raw.githubusercontent.com/KimmoVehkalahti/MABS/master/Examples/data/rats.txt", header = TRUE, sep = '\t')
+
+# Factor variables ID and Group
+RATS$ID <- factor(RATS$ID)
+RATS$Group <- factor(RATS$Group)
+
+str(RATS)
+
+View(RATS)
+```
+
+
+
+#Change to long format 
+```{r}
+RATSL <- RATS %>%
+  gather(key = WD, value = Weight, -ID, -Group) %>%
+  mutate(Time = as.integer(substr(WD,3,4))) 
+
+str(RATSL)
+```
+
+As we can see, the long data is easier to work with. From personal experience, I have had difficulty being able to understand wide data and edit it. There are two many columns and it isn't easy to filter. The long data set puts treatments, dates and other categories all in one column so that you have fewer columns and just have each data point (obersvation there easier to see. 
+
+This data is from a nutrition study with 9 different weeks on three groups. Having this data in long format allows for better analysis between the weeks and groups. 
+
+```{r}
+
+# Draw the plot
+ggplot(RATSL, aes(x = Time, y = Weight, linetype = Group)) +
+  geom_point(aes(col = Group)) 
+ 
+```
+Here we see the plot of the groups shown in different colors. 
+
+
+```{r}
+ggplot(RATSL, aes(x = Time, y = Weight, linetype = ID, color = ID)) +
+  geom_point(size = 0.5) + 
+  geom_line(aes(group = ID)) +
+  scale_linetype_manual(values = rep(1:10, times=4)) +
+  facet_grid(. ~ Group, labeller = label_both) +
+  scale_y_continuous(limits = c(min(RATSL$Weight), max(RATSL$Weight)))
+```
+Here I have plotted each group separately with the individuals with a seperate line. 
+
+```{r}
+
+# Standardise the variable bprs
+RATSL <- RATSL %>%
+  group_by(Time) %>%
+  mutate(stdweight = (Weight) - mean(Weight)/sd(Weight) ) %>%
+  ungroup()
+
+
+
+# Plot again with the standardised bprs
+ggplot(RATSL, aes(x = Time, y = stdweight, col = Group)) +
+  geom_line() +
+  scale_linetype_manual(values = rep(1:10, times=4)) +
+  facet_grid(. ~ Group, labeller = label_both) +
+  scale_y_continuous(name = "standardized weight")
+
+```
+After standardization, you can see the min and max with each group. 
+
+```{r}
+
+# Number of weeks, baseline (week 0) included
+n <- RATSL$Time %>% unique() %>% length()
+
+# Summary data with mean and standard error of bprs by treatment and week 
+RATSS <- RATSL %>%
+  group_by(Group, Time) %>%
+  summarise( mean = mean(Weight), se = sd(Weight)/sqrt(n) ) %>%
+  ungroup()
+
+
+
+# Plot the mean profiles
+ggplot(RATSS, aes(x = Time, y = mean, col = Group, shape = Group)) +
+  geom_line() +
+  scale_linetype_manual(values = c(1,2,3)) +
+  geom_point(size=3) +
+  scale_shape_manual(values = c(1,2,3)) +
+  geom_errorbar(aes(ymin = mean - se, ymax = mean + se), width=0.3) +
+  theme(legend.position = c(0.9,0.5)) +
+  scale_y_continuous(name = "mean(weight) +/- se(weight)")
+
+```
+
+
+
+
+
+Here we are able to see that groups 2 and 3 are gaining weight over time while the group 1 seems to not gain much at all. 
+
+```{r}
+# Create a summary data by treatment and subject with mean as the summary variable (ignoring baseline week 0).
+RATSSbox <- RATSL %>%
+   group_by(Group, ID) %>%
+  summarise( mean=mean(Weight) ) %>%
+  ungroup()
+
+# Draw a boxplot of the mean versus treatment
+ggplot(RATSSbox, aes(x = Group, y = mean)) +
+  geom_boxplot() +
+  stat_summary(fun.y = "mean", geom = "point", shape=23, size=4, fill = "white") +
+  scale_y_continuous(name = "mean weight")
+
+# Create a new data by filtering the outlier and adjust the ggplot code the draw the plot again with the new data
+RATSSbox1 <- RATSSbox %>%
+  filter(mean < 540)
+
+```
+
+Here we have changed the parameters to be able to see the outliers in each group. 
+
+```{r}
+
+
+
+# Add the baseline from the original data as a new variable to the summary data
+RATSSbox2<- RATSSbox %>%
+  mutate(baseline = RATS$WD1)
+
+
+
+
+# Fit the linear model with the mean as the response 
+fit <- lm(mean ~ baseline + Group, data = RATSSbox2)
+
+# Compute the analysis of variance table for the fitted model with anova()
+anova(fit)
+
+```
+
+
+Here we can see that there is a highly statistical difference between the groups. This analysis consisted of looking for outliers in the groups and analyzing if there was a difference between them over time. We did find that group 2 and 3 were statiscally different than group 1. 
+
+
+
+
+## Analysis of BPRS Data
+
+```{r}
+# Read the BPRS data
+BPRS <- read.table("https://raw.githubusercontent.com/KimmoVehkalahti/MABS/master/Examples/data/BPRS.txt", sep  =" ", header = T)
+
+# Look at the (column) names of BPRS
+names(BPRS)
+
+# Look at the structure of BPRS
+str(BPRS)
+
+# print out summaries of the variables
+summary(BPRS)
+
+```
+## Convert to long format 
+
+```{r}
+
+
+
+# Factor treatment & subject
+BPRS$treatment <- factor(BPRS$treatment)
+BPRS$subject <- factor(BPRS$subject)
+
+
+# Convert to long form
+BPRSL <-  BPRS %>% gather(key = weeks, value = bprs, -treatment, -subject)
+
+# Extract the week number
+BPRSL <-  BPRSL %>% mutate(week = as.integer(substr(weeks,5,5)))
+
+str(BPRSL)
+View(BPRSL)
+```
+
+As discussed under the RATS data with long conversion, this BPRS data is also better analyzed after long conversion. It is easier to group the individuals responses when have the weeks in a different format. 
+
+
+
+```{r }
+## Plot the data
+ggplot(BPRSL, aes(x = week, y = bprs, col = subject)) +
+  geom_line(aes(linetype =subject)) +
+  scale_x_continuous(name = "Week") +
+  scale_y_continuous(name = "BPRS") +
+  theme(legend.position = "top")
+```
+
+From the plot above we can see the longitudinal data among the weeks and individuals. 
+We will now run a regression linear model. 
+
+
+```{r}
+ggplot(BPRSL, aes(x = week, y = bprs, linetype = subject, col = subject)) +
+  geom_point(size = 0.5) + 
+  geom_line() +
+  scale_linetype_manual(values = rep(1:10, times=4)) +
+  facet_grid(. ~ treatment, labeller = label_both) +
+  scale_y_continuous(limits = c(min(BPRSL$bprs), max(BPRSL$bprs)))
+```
+From the above graphs we can see the longitudinal data over time with each treatments. We see the variation with all of the subjects. 
+
+```{r}
+BPRS_reg <- lm(bprs ~ week + treatment, data = BPRSL)
+
+# print out a summary of the model
+summary(BPRS_reg)
+```
+We can see that there are statistical differences between the weeks. The p-value is very low meaning a high statistical difference. 
+
+### Linear Model and Random inercept model 
+
+```{r}
+
+
+#install.packages('lme4')
+library('lme4')
+
+# Create a random intercept model
+BPRS_ref <- lmer(bprs ~ week + treatment + (1| subject), data = BPRSL, REML = FALSE)
+
+# Print the summary of the model
+summary(BPRS_ref)
+
+```
+
+```{r}
+# create a random intercept and random slope model
+BPRS_ref1 <- lmer(bprs ~ week + treatment + (week | subject), data = BPRSL, REML = FALSE)
+
+# print a summary of the model
+summary(BPRS_ref1)
+
+# perform an ANOVA test on the two models
+anova(BPRS_ref1, BPRS_ref)
+```
+
+WE can also see here that there is a statiscal difference between the two linear models by looking at the p-value - 0.2636. This means that adding in different and more parameters gives us a better model for our data. We should keep these variable when running and analyzing the data.  
+
+```{r}
+# create a random intercept and random slope model
+BPRS_ref2 <- lmer(bprs ~ week * treatment + (week | subject), data = BPRSL, REML = FALSE)
+
+# print a summary of the model
+summary(BPRS_ref2)
+
+# perform an ANOVA test on the two models
+anova(BPRS_ref2, BPRS_ref1)
+```
+
+```{r}
+
+# draw the plot of BPRSL
+#ggplot(BPRSL, aes(x = week, y = Fitted, col = subject)) +
+    #geom_line() +
+  #scale_linetype_manual(values = rep(1:10, times=4)) +
+  #scale_y_continuous(limits = c(min(BPRSL$Fitted), max(BPRSL$Fitted)))
+
+```
+Here I have tried (and failed) to make a new plot with the fitted data. I believe that this would have allowed for us to see better the variation with each subject over time. 
+
+This week we have learned how to make a conversion from wide to long data. We then performed linear model, t-test (tried) and random slope models on our data. 
+
+

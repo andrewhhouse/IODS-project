@@ -41,8 +41,17 @@ output:
 # This will include Chapter 4 (that is updated in its own file) in the document.Updated!!
 ```
 
+***
+
 ```{r child = "chapter5.Rmd"}
-# This will include Chapter 4 (that is updated in its own file) in the document.Updated!!
+# This will include Chapter 5 (that is updated in its own file) in the document.Updated!!
+```
+
+***
+
+```{r child = "chapter6.Rmd"}
+# This will include Chapter 6 (that is updated in its own file) in the document.Updated!!
+
 ```
 
 
