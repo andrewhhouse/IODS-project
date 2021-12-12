@@ -58,3 +58,8 @@ str(BPRSL)
 
 #View the file after long conversion 
 View(BPRSL)
+
+
+
+
+### Here we have been able to see the difference between wide and long data formats. The long data formats is better for editing and analysis. When we put the variable in the long format it allows us to be able to filter and see what is happening over time. From personal experience working with longitudinal data, the long format is more informative and easier to understand in everyway. 
