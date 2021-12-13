@@ -170,7 +170,8 @@ pre code {
 <div id="chapter-6" class="section level1">
 <h1>Chapter 6</h1>
 <p>For this week we will load two datasets in wide format and convert them to long format. We will then perform analysis on the long formatted dataset.</p>
-<p>##Analysis of RATS data</p>
+<div id="analysis-of-rats-data" class="section level2">
+<h2>Analysis of RATS data</h2>
 <p>We now will load the RATS data.</p>
 <pre class="r"><code>library(reshape2)</code></pre>
 <pre><code>## Warning: package &#39;reshape2&#39; was built under R version 4.0.5</code></pre>
@@ -214,7 +215,9 @@ str(RATS)</code></pre>
 ##  $ WD57 : int  272 247 268 273 278 279 281 274 468 484 ...
 ##  $ WD64 : int  278 245 269 275 280 281 284 278 478 496 ...</code></pre>
 <pre class="r"><code>View(RATS)</code></pre>
-<p>#Change to long format</p>
+</div>
+<div id="change-to-long-format" class="section level2">
+<h2>Change to long format</h2>
 <pre class="r"><code>RATSL &lt;- RATS %&gt;%
   gather(key = WD, value = Weight, -ID, -Group) %&gt;%
   mutate(Time = as.integer(substr(WD,3,4))) 
@@ -313,6 +316,7 @@ anova(fit)</code></pre>
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 <p>Here we can see that there is a highly statistical difference between the groups. This analysis consisted of looking for outliers in the groups and analyzing if there was a difference between them over time. We did find that group 2 and 3 were statiscally different than group 1.</p>
+</div>
 <div id="analysis-of-bprs-data" class="section level2">
 <h2>Analysis of BPRS Data</h2>
 <pre class="r"><code># Read the BPRS data

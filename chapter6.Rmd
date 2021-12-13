@@ -3,7 +3,7 @@
 For this week we will load two datasets in wide format and convert them to long format. We will then perform analysis on the long formatted dataset. 
 
 
-##Analysis of RATS data
+## Analysis of RATS data
 
 We now will load the RATS data. 
 
@@ -27,7 +27,7 @@ View(RATS)
 
 
 
-#Change to long format 
+## Change to long format 
 ```{r}
 RATSL <- RATS %>%
   gather(key = WD, value = Weight, -ID, -Group) %>%
